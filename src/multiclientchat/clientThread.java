@@ -10,6 +10,8 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.Socket;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  *
@@ -42,6 +44,14 @@ public class clientThread extends Thread{
        */
       is = new DataInputStream(clientSocket.getInputStream());
       os = new PrintStream(clientSocket.getOutputStream());
+      
+      
+      Date today = new Date(); 
+      String httpResponse = "HTTP/1.1 200 OK\r\n\r\n" + today;
+
+      os.println(httpResponse);
+      
+      
       String name;
       while (true) {
         os.println("Enter your name.");
@@ -72,6 +82,8 @@ public class clientThread extends Thread{
       }
       /* Start the conversation. */
       while (true) {
+        Date current_time = new Date(); 
+        String time_to_string = new SimpleDateFormat("k:m").format(current_time);
         String line = is.readLine();
         if (line.startsWith("/quit")) {
           break;
@@ -87,12 +99,13 @@ public class clientThread extends Thread{
                   if (threads[i] != null && threads[i] != this
                       && threads[i].clientName != null
                       && threads[i].clientName.equals(words[0])) {
-                    threads[i].os.println("<" + name + "> " + words[1]);
+                      
+                    threads[i].os.println("<" + name + "> [" + time_to_string + "] " + words[1]);
                     /*
                      * Echo this message to let the client know the private
                      * message was sent.
                      */
-                    this.os.println(">" + name + "> " + words[1]);
+                    this.os.println(">" + name + "> [" + time_to_string + "] " + words[1]);
                     break;
                   }
                 }
@@ -104,7 +117,7 @@ public class clientThread extends Thread{
           synchronized (this) {
             for (int i = 0; i < maxClientsCount; i++) {
               if (threads[i] != null && threads[i].clientName != null) {
-                threads[i].os.println("<" + name + "> " + line);
+                threads[i].os.println("<" + name + "> [" + time_to_string + "] " + line);
               }
             }
           }

@@ -10,6 +10,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Observable;
 import java.util.Observer;
@@ -33,6 +34,14 @@ public class ChatClient {
         public void InitSocket(String server, int port) throws IOException {
             socket = new Socket(server, port);
             outputStream = socket.getOutputStream();
+            
+            // no auto-flushing
+            /*PrintWriter pw = new PrintWriter(outputStream, false);
+            // native line endings are uncertain so add them manually
+            pw.print("GET index HTTP/1.0\r\n");
+            pw.print("Accept: text/plain, text/html, text/*\r\n");
+            pw.print("\r\n");
+            pw.flush();*/
 
             Thread receivingThread = new Thread() {
                 @Override
